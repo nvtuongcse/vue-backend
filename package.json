@@ -1,0 +1,50 @@
+{
+  "name": "backend-vue",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "babel-node ./src/bin/www",
+    "prestart": "rm -rf build && mkdir build && babel ./src -d build",
+    "dev": "nodemon ./src/bin/www --exec babel-node",
+    "lint": "eslint --ext .js ./src"
+  },
+  "dependencies": {
+    "babel-cli": "6.26.0",
+    "babel-eslint": "8.2.3",
+    "babel-jest": "22.4.3",
+    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-plugin-transform-object-rest-spread": "6.26.0",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-preset-env": "1.6.1",
+    "babel-runtime": "6.26.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.0.2",
+    "graphql-compose": "^5.4.0",
+    "graphql-compose-connection": "^4.0.0",
+    "graphql-compose-mongoose": "^5.2.1",
+    "graphql-compose-pagination": "^4.0.0",
+    "hbs": "~4.0.1",
+    "http-errors": "~1.6.2",
+    "install": "^0.12.2",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.4.2",
+    "morgan": "~1.9.0",
+    "npm": "^6.5.0",
+    "prettier": "1.12.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "eslint": "4.19.1",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-import": "2.11.0",
+    "eslint-plugin-prettier": "2.6.0",
+    "nodemon": "^1.18.9"
+  }
+}
