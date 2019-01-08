@@ -58,16 +58,16 @@ profileTC.addResolver({
         filter,
         {
           $pull: {
-            pendingFriendIds: record.profileId,
+            pendingFriendIds: record.userId,
           },
           $push: {
-            friendIds: record.profileId,
+            friendIds: record.userId,
           },
         },
         { new: true, upsert: true },
       );
       await profileModel.findOneAndUpdate(
-        { _id: record.profileId },
+        { _id: record.userId },
         {
           $push: {
             friendIds: reciever._id,
