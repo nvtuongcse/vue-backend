@@ -18,18 +18,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const { String, ObjectId } = _mongoose.SchemaTypes;
 
 const profileSchema = (0, _mongoose.Schema)({
+  name: String,
+  decription: {
+    type: String
+  },
+  fullName: String,
   userId: {
     type: ObjectId,
     ref: _type2.default.userType
   },
-  fname: String,
-  nName: String,
-  decription: {
-    type: String
-  },
   postIds: {
     type: [ObjectId],
     ref: _type2.default.postType
+  },
+  pendingFriends: {
+    type: [ObjectId],
+    ref: _type2.default.profileType
   },
   friendIds: {
     type: [ObjectId],

@@ -15,11 +15,15 @@ var _type = require('../../model/type');
 
 var _type2 = _interopRequireDefault(_type);
 
+var _profileIdRecordArgs = require('../resolvers/profileIdRecordArgs');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const postModel = _mongoose2.default.model(_type2.default.postType);
 
 const postTC = exports.postTC = (0, _graphqlComposeMongoose.composeWithMongoose)(postModel);
+
+(0, _profileIdRecordArgs.profileIdRecordArgs)(postTC, ['createOne']);
 
 const resolver = exports.resolver = {
   adminQuery: {
@@ -31,11 +35,10 @@ const resolver = exports.resolver = {
     postPaginantion: postTC.getResolver('pagination')
   },
   adminMutation: {
-    postCreateOne: postTC.getResolver('createOne'),
-    postUpdateOne: postTC.getResolver('updateOne'),
     postRemoveOne: postTC.getResolver('removeOne')
   },
   userMutaion: {
+    postCreateOne: postTC.getResolver('createOne'),
     postRemoveOne: postTC.getResolver('removeOne')
   }
 };

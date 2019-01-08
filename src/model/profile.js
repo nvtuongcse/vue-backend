@@ -18,7 +18,7 @@ const profileSchema = Schema(
       type: [ObjectId],
       ref: modelType.postType,
     },
-    pendingFriends: {
+    pendingFriendIds: {
       type: [ObjectId],
       ref: modelType.profileType,
     },

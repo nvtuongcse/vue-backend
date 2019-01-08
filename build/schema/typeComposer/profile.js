@@ -17,9 +17,16 @@ var _type2 = _interopRequireDefault(_type);
 
 var _post = require('./post');
 
+var _userIdFilterArgs = require('../resolvers/userIdFilterArgs');
+
+var _user = require('./user');
+
+var _graphqlCompose = require('graphql-compose');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const profileModel = _mongoose2.default.model(_type2.default.profileType);
+const postModel = _mongoose2.default.model(_type2.default.postType);
 
 const profileTC = exports.profileTC = (0, _graphqlComposeMongoose.composeWithMongoose)(profileModel);
 
@@ -33,15 +40,26 @@ profileTC.addRelation('friends', {
   }
 });
 
-profileTC.addRelation('posts', {
-  resolver: () => _post.postTC.getResolver('findByIds'),
+profileTC.addRelation('user', {
+  resolver: () => _user.userTC.getResolver('findById'),
   prepareArgs: {
-    _ids: source => source.postIds
+    _id: source => source.userId
   },
   projection: {
-    postIds: 1
+    userId: 1
   }
 });
+
+profileTC.addFields({
+  posts: new _graphqlCompose.Resolver({
+    name: 'PostRelative',
+    type: [_post.postTC],
+    resolve: async ({ source }) => await postModel.find({ profileId: source._id }).lean()
+  })
+});
+
+(0, _userIdFilterArgs.userIdFilterArgs)(profileTC, ['findOne']);
+(0, _userIdFilterArgs.userIdFilterArgs)(profileTC, ['updateOne']);
 
 const resolver = exports.resolver = {
   adminQuery: {
@@ -58,6 +76,11 @@ const resolver = exports.resolver = {
     profileRemoveOne: profileTC.getResolver('removeOne')
   },
   userMutaion: {
+    profileUpdateOne: profileTC.getResolver('updateOne'),
     profileRemoveOne: profileTC.getResolver('removeOne')
+  },
+  guestQuery: {
+    profileFindOne: profileTC.getResolver('findOne'),
+    profilePaginantion: profileTC.getResolver('pagination')
   }
 };

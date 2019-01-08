@@ -13,16 +13,27 @@ var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
+var _bcryptjs = require('bcryptjs');
+
+var _bcryptjs2 = _interopRequireDefault(_bcryptjs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { String } = _mongoose.SchemaTypes;
+const { String, ObjectId } = _mongoose.SchemaTypes;
 
 const userSchema = (0, _mongoose.Schema)({
-  email: String,
+  email: {
+    type: String,
+    unique: true
+  },
   password: String,
   updatedAt: {
     type: Date,
     index: true
+  },
+  profileId: {
+    type: ObjectId,
+    ref: _type2.default.profileType
   },
   createdAt: {
     type: Date,
@@ -31,6 +42,18 @@ const userSchema = (0, _mongoose.Schema)({
 }, {
   timestamps: true,
   collection: _type2.default.userIndex
+});
+userSchema.pre('save', async function (next) {
+  try {
+    const salt = await _bcryptjs2.default.genSalt(10);
+    this.password = await _bcryptjs2.default.hash(this.password, salt);
+    const profileModel = _mongoose2.default.model(_type2.default.profileType);
+    const profileOne = await profileModel.create({ userId: this._id });
+    this.profileId = profileOne._id;
+    next();
+  } catch (error) {
+    throw error;
+  }
 });
 
 const userModel = exports.userModel = _mongoose2.default.model(_type2.default.userType, userSchema);

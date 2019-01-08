@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { composeWithMongoose } from 'graphql-compose-mongoose';
 import modelType from '../../model/type';
 import { profileIdRecordArgs } from '../resolvers/profileIdRecordArgs';
+import { profileTC } from './profile';
 
 const postModel = mongoose.model(modelType.postType);
 

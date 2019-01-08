@@ -1,0 +1,44 @@
+{
+  "extends": "airbnb-base",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "rules": {
+    "no-underscore-dangle": [
+      2,
+      {
+        "allow": [
+          "_id",
+          "_conditions",
+          "_source",
+          "_operators"
+        ]
+      }
+    ],
+    "func-names": [
+      "error",
+      "never"
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "global-require": "off",
+    "no-restricted-syntax": "off",
+    "no-unused-expressions": "off",
+    "no-console": "off",
+    "no-return-await": "off",
+    "camelcase": "off",
+    "import/prefer-default-export": "off",
+    "array-callback-return": "off",
+    "prefer-arrow-callback": "off",
+    "guard-for-in": "off",
+    "no-await-in-loop": "off"
+  }
+}

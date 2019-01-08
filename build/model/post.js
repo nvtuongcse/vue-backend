@@ -10,15 +10,19 @@ var _type2 = _interopRequireDefault(_type);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { String } = _mongoose.SchemaTypes;
+const { String, ObjectId } = _mongoose.SchemaTypes;
 
 const postSchema = (0, _mongoose.Schema)({
   title: String,
-  imageUrl: {
+  imgUrl: {
     type: String
   },
   decription: {
     type: String
+  },
+  profileId: {
+    type: ObjectId,
+    ref: _type2.default.profileType
   },
   content: {
     type: String

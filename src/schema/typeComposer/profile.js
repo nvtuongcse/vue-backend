@@ -1,46 +1,117 @@
 import mongoose from 'mongoose';
+import { Resolver } from 'graphql-compose';
 import { composeWithMongoose } from 'graphql-compose-mongoose';
 import modelType from '../../model/type';
 import { postTC } from './post';
 import { userIdFilterArgs } from '../resolvers/userIdFilterArgs';
 import { userTC } from './user';
-import { Resolver } from 'graphql-compose';
+import { profileIdRecordArgs } from '../resolvers/profileIdRecordArgs';
 
 const profileModel = mongoose.model(modelType.profileType);
 const postModel = mongoose.model(modelType.postType);
 
 export const profileTC = composeWithMongoose(profileModel);
 
-profileTC.addRelation('friends', {
-  resolver: () => profileTC.getResolver('findByIds'),
-  prepareArgs: {
-    _ids: source => source.friendIds,
-  },
-  projection: {
-    friendIds: 1,
-  },
-});
-
-profileTC.addRelation('user', {
-  resolver: () => userTC.getResolver('findById'),
-  prepareArgs: {
-    _id: source => source.userId,
-  },
-  projection: {
-    userId: 1,
-  },
-});
-
 profileTC.addFields({
   posts: new Resolver({
     name: 'PostRelative',
     type: [postTC],
-    resolve: async ({ source }) => await postModel.find({ profileId: source._id }).lean(),
+    resolve: async ({ source }) =>
+      await postModel
+        .find({ profileId: source._id })
+        .sort({ createdAt: 'desc' })
+        .lean(),
   }),
+});
+
+profileTC.addResolver({
+  name: 'sendFriendRequest',
+  type: 'JSON',
+  args: profileTC.getResolver('updateOne').args,
+  resolve: async ({ args }) => {
+    const { filter = {}, record = {} } = args;
+    try {
+      const reciever = await profileModel.findOneAndUpdate(
+        filter,
+        {
+          $addToSet: {
+            pendingFriendIds: record.profileId,
+          },
+        },
+        { new: true, upsert: true },
+      );
+      return reciever;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+});
+
+profileTC.addResolver({
+  name: 'acceptFriendRequest',
+  type: 'JSON',
+  args: profileTC.getResolver('updateOne').args,
+  resolve: async ({ args }) => {
+    const { filter = {}, record = {} } = args;
+    try {
+      const reciever = await profileModel.findOneAndUpdate(
+        filter,
+        {
+          $pull: {
+            pendingFriendIds: record.profileId,
+          },
+          $push: {
+            friendIds: record.profileId,
+          },
+        },
+        { new: true, upsert: true },
+      );
+      await profileModel.findOneAndUpdate(
+        { _id: record.profileId },
+        {
+          $push: {
+            friendIds: reciever._id,
+          },
+        },
+        { new: true, upsert: true },
+      );
+      return {
+        message: 'Success!',
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+});
+
+profileTC.addResolver({
+  name: 'decideFriendRequest',
+  type: 'JSON',
+  args: profileTC.getResolver('updateOne').args,
+  resolve: async ({ args }) => {
+    const { filter = {}, record = {} } = args;
+    try {
+      const reciever = await profileModel.findOneAndUpdate(
+        filter,
+        {
+          $pull: {
+            pendingFriendIds: record.profileId,
+          },
+        },
+        { new: true, upsert: true },
+      );
+      return reciever;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 });
 
 userIdFilterArgs(profileTC, ['findOne']);
 userIdFilterArgs(profileTC, ['updateOne']);
+userIdFilterArgs(profileTC, ['acceptFriendRequest']);
+userIdFilterArgs(profileTC, ['decideFriendRequest']);
+profileIdRecordArgs(profileTC, ['sendFriendRequest']);
 
 export const resolver = {
   adminQuery: {
@@ -59,6 +130,9 @@ export const resolver = {
   userMutaion: {
     profileUpdateOne: profileTC.getResolver('updateOne'),
     profileRemoveOne: profileTC.getResolver('removeOne'),
+    sendFriendRequest: profileTC.getResolver('sendFriendRequest'),
+    acceptFriendRequest: profileTC.getResolver('acceptFriendRequest'),
+    decideFriendRequest: profileTC.getResolver('decideFriendRequest'),
   },
   guestQuery: {
     profileFindOne: profileTC.getResolver('findOne'),
