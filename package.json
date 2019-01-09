@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "babel-node ./src/bin/www",
-    "prestart": "rm -rf build && mkdir build && babel ./src -d build",
-    "dev": "nodemon ./src/bin/www --exec babel-node",
+    "start": "babel-node ./src/index.js",
+    "build": "rm -rf build && mkdir build && babel ./src -d build",
+    "dev": "nodemon ./src/index.js --exec babel-node",
     "lint": "eslint --ext .js ./src"
   },
   "dependencies": {
@@ -36,7 +36,8 @@
     "mongoose": "^5.4.2",
     "morgan": "~1.9.0",
     "npm": "^6.5.0",
-    "prettier": "1.12.1"
+    "prettier": "1.12.1",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

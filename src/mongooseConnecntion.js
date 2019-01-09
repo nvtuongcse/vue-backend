@@ -21,7 +21,6 @@ mongoose.connect('mongodb://localhost:27017/vueapp', opts).then(
   },
 );
 
-mongoose.set('debug', true);
-
+// mongoose.set('debug', true);
 
 require('./model');

@@ -3,6 +3,14 @@ import modelType from './type';
 
 const { String, ObjectId } = SchemaTypes;
 
+const commentSchema = Schema({
+  profileId: {
+    type: ObjectId,
+    ref: modelType.profileType,
+  },
+  content: String,
+});
+
 const postSchema = Schema(
   {
     title: String,
@@ -23,6 +31,7 @@ const postSchema = Schema(
       type: String,
       enum: ['private', 'public', 'friend'],
     },
+    comments: [commentSchema],
     updatedAt: {
       type: Date,
       index: true,
