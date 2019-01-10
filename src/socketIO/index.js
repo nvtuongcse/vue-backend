@@ -10,22 +10,38 @@ export const io = SocketIO(server);
 
 export const postIO = io.of('/post').on('connection', (socket) => {
   socket.on('join-room', (channel) => {
-    console.log('On Join room');
+    console.log('on Join room');
     socket.join(channel);
   });
-  socket.on('addComment', async ({ content, token, _id }) => {
-    console.log('On add Comment');
+  socket.on('leave-room', (channel) => {
+    console.log('leaving');
+    socket.leave(channel);
+  });
+  socket.on('disconnect', () => {
+    socket.disconnect(true);
+    console.log(socket);
+  });
+  socket.on('add-comment', async ({ content, token, _id }) => {
     try {
       const decoded = await verifyToken(JWTSECRETKEY, token);
-      const postOne = await postModel.findOneAndUpdate({ _id }, {
-        $push: {
-          comments: { content, profileId: decoded.profileId },
-        },
-      }, { new: true, upsert: true });
-      postIO.to(`${_id}`).emit('addedComment', postOne);
-      console.log('On added Comment');
+      const postOne = await postModel
+        .findOneAndUpdate(
+          { _id },
+          {
+            $push: {
+              comments: { content, profileId: decoded.profileId },
+            },
+          },
+          { new: true, upsert: true },
+        )
+        .lean();
+      postIO.to(`${postOne._id}`).emit('comment-added', postOne);
     } catch (error) {
       throw new Error(error.message);
     }
   });
+});
+
+postIO.on('disconnect', (socket) => {
+  console.log(socket.rooms);
 });

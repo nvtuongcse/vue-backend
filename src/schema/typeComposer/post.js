@@ -3,6 +3,7 @@ import { composeWithMongoose } from 'graphql-compose-mongoose';
 import modelType from '../../model/type';
 import { profileIdRecordArgs } from '../resolvers/profileIdRecordArgs';
 import { postIO } from '../../socketIO';
+import { profileTC } from './profile';
 
 const postModel = mongoose.model(modelType.postType);
 
@@ -35,6 +36,14 @@ postTC.addResolver({
       socket.leave(`${_id}`);
     });
   },
+});
+
+postTC.addRelation('author', {
+  resolver: () => profileTC.getResolver('findById'),
+  prepareArgs: {
+    _id: source => source.profileId,
+  },
+  projection: { profileId: true },
 });
 
 profileIdRecordArgs(postTC, ['createOne']);
