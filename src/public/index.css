@@ -1,0 +1,47 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background: #fff
+}
+
+#app {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.login {
+  padding-top: 60px;
+  height: 100%;
+  width: 100%;
+  background: white
+}
+
+.account {
+  padding-top: 56px;
+  width: 100%;
+}
+
+textarea {
+  resize: none;
+}
+
+.explore {
+  padding-top: 60px;
+  width: 100%;
+  background: #fff
+}
+
+.viewpost {
+  height: 100%;
+  width: 100%;
+  background: white
+}

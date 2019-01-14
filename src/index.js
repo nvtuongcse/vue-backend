@@ -7,6 +7,7 @@ const logger = require('morgan');
 const debug = require('debug')('backend-vue:server');
 const http = require('http');
 require('./mongooseConnecntion.js');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,13 +17,15 @@ require('./socketIO');
 
 const { graphqlSchema } = require('./schema');
 
-const port = '3000';
+const port = process.env.PORT || '3000';
 app.set('port', port);
 // app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get(
   '/graphql',
