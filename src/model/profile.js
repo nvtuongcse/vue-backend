@@ -14,10 +14,6 @@ const profileSchema = Schema(
       type: ObjectId,
       ref: modelType.userType,
     },
-    postIds: {
-      type: [ObjectId],
-      ref: modelType.postType,
-    },
     pendingFriendIds: {
       type: [ObjectId],
       ref: modelType.profileType,
@@ -38,10 +34,10 @@ const profileSchema = Schema(
   {
     timestamps: true,
     collection: modelType.profileIndex,
-  }
+  },
 );
 
 export const profileModel = mongoose.model(
   modelType.profileType,
-  profileSchema
+  profileSchema,
 );

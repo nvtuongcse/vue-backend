@@ -1,5 +1,5 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-require('dotenv');
 
 const opts = {
   autoReconnect: true,
@@ -11,7 +11,7 @@ const opts = {
 
 mongoose
   .connect(
-    'mongodb+srv://vue-app-2409:vueapp2409@cluster0-mjbso.mongodb.net/vueapp',
+    process.env.MONGO_URI,
     opts,
   )
   .then(
@@ -19,14 +19,12 @@ mongoose
       console.log('MongoDB connected!');
     },
     (err) => {
-      console.log(`MongoDB connection error ${err}`);
       if (err.message && err.message.code === 'ETIMEDOUT') {
-        console.log('Retrying...');
         mongoose.connect(process.env.MONGO_URI, opts);
       }
     },
   );
 
-// mongoose.set('debug', true);
+mongoose.set('debug', false);
 
 require('./model');

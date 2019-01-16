@@ -10,16 +10,14 @@ export const io = SocketIO(server);
 
 export const postIO = io.of('/post').on('connection', (socket) => {
   socket.on('join-room', (channel) => {
-    console.log('on Join room');
     socket.join(channel);
   });
   socket.on('leave-room', (channel) => {
-    console.log('leaving');
     socket.leave(channel);
   });
   socket.on('disconnect', () => {
     socket.disconnect(true);
-    console.log(socket);
+    (socket);
   });
   socket.on('add-comment', async ({ content, token, _id }) => {
     try {
@@ -40,8 +38,4 @@ export const postIO = io.of('/post').on('connection', (socket) => {
       throw new Error(error.message);
     }
   });
-});
-
-postIO.on('disconnect', (socket) => {
-  console.log(socket.rooms);
 });

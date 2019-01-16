@@ -4,8 +4,8 @@ import { composeWithMongoose } from 'graphql-compose-mongoose';
 import modelType from '../../model/type';
 import { postTC } from './post';
 import { userIdFilterArgs } from '../resolvers/userIdFilterArgs';
-import { userTC } from './user';
 import { profileIdRecordArgs } from '../resolvers/profileIdRecordArgs';
+import { get } from 'lodash';
 
 const profileModel = mongoose.model(modelType.profileType);
 const postModel = mongoose.model(modelType.postType);
@@ -16,11 +16,28 @@ profileTC.addFields({
   posts: new Resolver({
     name: 'PostRelative',
     type: [postTC],
-    resolve: async ({ source }) =>
-      await postModel
-        .find({ profileId: source._id })
+    resolve: async ({ source, args, context }) => {
+      const profileId = get(context, 'decoded.profileId', null);
+      console.log(profileId, source._id);
+      let filter = {
+        profileId: source._id,
+        pravicy: {
+          $in: ['public'],
+        },
+      };
+      if (profileId && source.friendIds.indexOf(profileId) > -1) {
+        filter.pravicy.$in.push('friend');
+      }
+      if (profileId == source._id) {
+        filter = {
+          profileId: source._id,
+        };
+      }
+      return await postModel
+        .find(filter)
         .sort({ createdAt: 'desc' })
-        .lean(),
+        .lean();
+    },
   }),
 });
 
@@ -107,6 +124,8 @@ profileTC.addResolver({
   },
 });
 
+profileTC.setResolver('viewProfile', profileTC.getResolver('findOne').clone());
+
 userIdFilterArgs(profileTC, ['findOne']);
 userIdFilterArgs(profileTC, ['updateOne']);
 userIdFilterArgs(profileTC, ['acceptFriendRequest']);
@@ -137,5 +156,6 @@ export const resolver = {
   guestQuery: {
     profileFindOne: profileTC.getResolver('findOne'),
     profilePaginantion: profileTC.getResolver('pagination'),
+    viewProfile: profileTC.getResolver('viewProfile'),
   },
 };
